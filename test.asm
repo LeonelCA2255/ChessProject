@@ -1,34 +1,30 @@
-;-------------------------------------
-; Chess Game - Menú Principal
-;-------------------------------------
 INCLUDE Irvine32.inc
 
 .data
     titleLabel  BYTE "CHESS GAME", 0
-    menuOption1 BYTE "1. Usuario (Iniciar sesión / Registrar)", 0
+    menuOption1 BYTE "1. Usuario (Iniciar sesion / Registrar)", 0
     menuOption2 BYTE "2. Iniciar Juego", 0
     menuOption3 BYTE "3. Salir del sistema", 0
-    promptText  BYTE "Ingrese una opción: ", 0
+    promptText  BYTE "Ingrese una opcion: ", 0
     userInput   BYTE 10 DUP (?)            ; Buffer para la entrada del usuario
 
-    ; Variables para el submenú de usuario
-    subMenuTitle BYTE "Submenú Usuario", 0
-    menuLogin    BYTE "1. Iniciar sesión", 0
+    subMenuTitle BYTE "Submenu Usuario", 0
+    menuLogin    BYTE "1. Iniciar sesion", 0
     menuCreate   BYTE "2. Crear cuenta", 0
     enterUser    BYTE "Ingrese su nombre de usuario: ", 0
-    enterPass    BYTE "Ingrese su contraseña: ", 0
+    enterPass    BYTE "Ingrese su contrasena: ", 0
+    username     BYTE 50 DUP (?)           ; Buffer para el nombre de usuario
+    password     BYTE 50 DUP (?)           ; Buffer para la contrasena
 
 .code
-main PROC
-    ;-------------------------------------
-    ; Menú Principal
-    ;-------------------------------------
+MainMenu PROC
+    ; Funcion que muestra el menu principal del juego
     call Clrscr                 ; Limpiar pantalla
-    mov edx, OFFSET titleLabel   ; Mostrar el título
+    mov edx, OFFSET titleLabel   ; Mostrar el titulo
     call WriteString
-    call Crlf                    ; Nueva línea
+    call Crlf                    ; Nueva linea
 
-    ; Mostrar opciones del menú principal
+    ; Funcion que muestra las opciones del menu principal
     mov edx, OFFSET menuOption1
     call WriteString
     call Crlf
@@ -41,15 +37,15 @@ main PROC
     call WriteString
     call Crlf
 
-    ; Solicitar la entrada del usuario
+    ; Funcion que solicita la entrada del usuario
     mov edx, OFFSET promptText
     call WriteString
     call ReadUserInput            ; Leer la entrada del usuario
 
-    ; Procesar la opción del usuario
+    ; Funcion que procesa la opcion seleccionada por el usuario
     mov al, userInput[0]
     cmp al, '1'
-    je UserMenu                  ; Saltar al submenú de usuario
+    je UserMenu                  ; Saltar al submenu de usuario
 
     cmp al, '2'
     je StartGame                 ; Saltar al inicio del juego
@@ -57,31 +53,30 @@ main PROC
     cmp al, '3'
     je ExitGame                  ; Salir del sistema
 
-    jmp main                     ; Si no es válida, volver a mostrar el menú
+    jmp MainMenu                 ; Si no es valida, volver a mostrar el menu
+MainMenu ENDP
 
-    ;-------------------------------------
-    ; Submenú de Usuario
-    ;-------------------------------------
 UserMenu PROC
+    ; Funcion que muestra el submenu de usuario
     call Clrscr
-    mov edx, OFFSET subMenuTitle  ; Mostrar título del submenú
+    mov edx, OFFSET subMenuTitle  ; Mostrar titulo del submenu
     call WriteString
     call Crlf
 
-    mov edx, OFFSET menuLogin     ; Opción 1: Iniciar sesión
+    mov edx, OFFSET menuLogin     ; Opcion 1: Iniciar sesion
     call WriteString
     call Crlf
 
-    mov edx, OFFSET menuCreate    ; Opción 2: Crear cuenta
+    mov edx, OFFSET menuCreate    ; Opcion 2: Crear cuenta
     call WriteString
     call Crlf
 
-    ; Solicitar la entrada del usuario
+    ; Funcion que solicita la entrada del usuario en el submenu
     mov edx, OFFSET promptText
     call WriteString
     call ReadUserInput
 
-    ; Procesar la opción del submenú
+    ; Funcion que procesa la opcion seleccionada en el submenu
     mov al, userInput[0]
     cmp al, '1'
     je Login
@@ -89,75 +84,81 @@ UserMenu PROC
     cmp al, '2'
     je CreateAccount
 
-    jmp UserMenu                  ; Si no es válida, volver a mostrar el submenú
+    jmp UserMenu                  ; Si no es valida, volver a mostrar el submenu
 UserMenu ENDP
 
-;-------------------------------------
-; Login (Iniciar sesión)
-;-------------------------------------
 Login PROC
+    ; Funcion que gestiona el inicio de sesion del usuario
     call Clrscr
     mov edx, OFFSET enterUser     ; Solicitar nombre de usuario
     call WriteString
-    lea edx, userInput
+    lea edx, username
     call ReadString
 
-    mov edx, OFFSET enterPass     ; Solicitar contraseña
+    mov edx, OFFSET enterPass     ; Solicitar contrasena
     call WriteString
-    lea edx, userInput
+    lea edx, password
     call ReadString
 
-    ; Aquí se realizaría la lógica de validación del usuario.
-    jmp main                     ; Volver al menú principal después de iniciar sesión
+    ; Simulacion de inicio de sesion sin validacion
+    call Crlf
+    mov edx, OFFSET username
+    call WriteString
+    call Crlf
+
+    mov edx, OFFSET password
+    call WriteString
+    call Crlf
+
+    jmp MainMenu                  ; Volver al menu principal despues de iniciar sesion
 Login ENDP
 
-;-------------------------------------
-; CreateAccount (Crear cuenta)
-;-------------------------------------
 CreateAccount PROC
+    ; Funcion que gestiona la creacion de una nueva cuenta
     call Clrscr
     mov edx, OFFSET enterUser     ; Solicitar nombre de usuario
     call WriteString
-    lea edx, userInput
+    lea edx, username
     call ReadString
 
-    mov edx, OFFSET enterPass     ; Solicitar contraseña
+    mov edx, OFFSET enterPass     ; Solicitar contrasena
     call WriteString
-    lea edx, userInput
+    lea edx, password
     call ReadString
 
-    ; Aquí se guardaría el nuevo usuario y contraseña en un archivo.
-    jmp main                     ; Volver al menú principal después de crear cuenta
+    ; Simulacion de creacion de cuenta sin guardar
+    call Crlf
+    mov edx, OFFSET username
+    call WriteString
+    call Crlf
+
+    mov edx, OFFSET password
+    call WriteString
+    call Crlf
+
+    jmp MainMenu                  ; Volver al menu principal despues de crear cuenta
 CreateAccount ENDP
 
-;-------------------------------------
-; Procedimiento StartGame (Iniciar juego)
-;-------------------------------------
 StartGame PROC
+    ; Funcion que inicia el juego
     call Clrscr
     mov edx, OFFSET menuOption2
     call WriteString
     call Crlf
-    jmp main
+    jmp MainMenu
 StartGame ENDP
 
-;-------------------------------------
-; Procedimiento ExitGame (Salir del sistema)
-;-------------------------------------
 ExitGame PROC
+    ; Funcion que finaliza el programa
     call ExitProcess            ; Salir del programa
 ExitGame ENDP
 
-;-------------------------------------
-; ReadUserInput
-;-------------------------------------
-; Lee una entrada de texto del usuario y la almacena en userInput.
-;-------------------------------------
 ReadUserInput PROC
-    lea edx, userInput           ; Cargar la dirección del buffer
-    mov ecx, 10                  ; Tamaño máximo del buffer
+    ; Funcion que lee la entrada del usuario y la almacena en userInput
+    lea edx, userInput           ; Cargar la direccion del buffer
+    mov ecx, 10                  ; Tamano maximo del buffer
     call ReadString              ; Leer la entrada del usuario
     ret
 ReadUserInput ENDP
 
-.END main
+END MainMenu
