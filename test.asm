@@ -1,125 +1,152 @@
 ;-------------------------------------
-; Chess Game - Main Menu
+; Chess Game - Menú Principal
 ;-------------------------------------
-; Programa en ensamblador usando Irvine32
-; Muestra el menú principal de un juego de ajedrez en la consola y maneja la entrada del usuario.
-;-------------------------------------
-
-INCLUDE Irvine32.inc  ; Librería de Irvine32
+INCLUDE Irvine32.inc
 
 .data
-    titleLabel  BYTE "CHESS GAME", 0        ; Título del juego
-    menuOption1 BYTE "1. Usuario (Iniciar sesion / Registrar)", 0
+    titleLabel  BYTE "CHESS GAME", 0
+    menuOption1 BYTE "1. Usuario (Iniciar sesión / Registrar)", 0
     menuOption2 BYTE "2. Iniciar Juego", 0
     menuOption3 BYTE "3. Salir del sistema", 0
-    promptText  BYTE "Ingrese una opcion: ", 0  ; Texto del prompt
-    newLine     BYTE 0Dh, 0Ah, 0            ; Carácter de nueva línea
-    userInput   BYTE 10 dup (?)              ; Buffer para almacenar la entrada del usuario
+    promptText  BYTE "Ingrese una opción: ", 0
+    userInput   BYTE 10 DUP (?)            ; Buffer para la entrada del usuario
+
+    ; Variables para el submenú de usuario
+    subMenuTitle BYTE "Submenú Usuario", 0
+    menuLogin    BYTE "1. Iniciar sesión", 0
+    menuCreate   BYTE "2. Crear cuenta", 0
+    enterUser    BYTE "Ingrese su nombre de usuario: ", 0
+    enterPass    BYTE "Ingrese su contraseña: ", 0
 
 .code
 main PROC
     ;-------------------------------------
-    ; Inicia el programa y configura el menú
+    ; Menú Principal
     ;-------------------------------------
-
     call Clrscr                 ; Limpiar pantalla
-
-    ;-------------------------------------
-    ; Mostrar el título centrado
-    ;-------------------------------------
-    mov edx, OFFSET titleLabel   ; Cargar la dirección del título
-    call CenterText              ; Centrar el título en la consola
+    mov edx, OFFSET titleLabel   ; Mostrar el título
+    call WriteString
     call Crlf                    ; Nueva línea
 
-    ;-------------------------------------
-    ; Mostrar las opciones del menú
-    ;-------------------------------------
-    mov edx, OFFSET menuOption1   ; Opción 1: Usuario
-    call WriteString
-    call Crlf                    ; Salto de línea
-
-    mov edx, OFFSET menuOption2   ; Opción 2: Iniciar Juego
-    call WriteString
-    call Crlf                    ; Salto de línea
-
-    mov edx, OFFSET menuOption3   ; Opción 3: Salir del sistema
-    call WriteString
-    call Crlf                    ; Salto de línea
-
-    ;-------------------------------------
-    ; Solicitar la entrada del usuario
-    ;-------------------------------------
-    mov edx, OFFSET promptText    ; Mensaje de solicitud
-    call WriteString
-    call ReadUserInput           ; Leer la entrada del usuario
-
-    ;-------------------------------------
-    ; Procesar la opción del usuario
-    ;-------------------------------------
-    mov al, userInput[0]         ; Leer el primer carácter de la entrada
-    cmp al, '1'                  ; Comparar con '1'
-    je Option1                   ; Si es igual, saltar a Option1
-
-    cmp al, '2'                  ; Comparar con '2'
-    je Option2                   ; Si es igual, saltar a Option2
-
-    cmp al, '3'                  ; Comparar con '3'
-    je Option3                   ; Si es igual, saltar a Option3
-
-    ; Si la opción no es válida, volver a mostrar el menú
-    call Clrscr                 ; Limpiar pantalla
-    jmp main                    ; Volver al inicio del menú
-
-    ;-------------------------------------
-    ; Opciones del menú
-    ;-------------------------------------
-Option1:
-    ; Aquí iría la lógica para la opción 1: Usuario
-    ; Por ejemplo: Llamar a un procedimiento para iniciar sesión o registrar
+    ; Mostrar opciones del menú principal
     mov edx, OFFSET menuOption1
     call WriteString
     call Crlf
-    jmp main                    ; Volver al menú principal
 
-Option2:
-    ; Aquí iría la lógica para la opción 2: Iniciar Juego
-    ; Por ejemplo: Llamar a un procedimiento para iniciar el juego
     mov edx, OFFSET menuOption2
     call WriteString
     call Crlf
-    jmp main                    ; Volver al menú principal
 
-Option3:
-    ; Aquí iría la lógica para la opción 3: Salir del sistema
-    ; Por ejemplo: Finalizar el programa
     mov edx, OFFSET menuOption3
     call WriteString
     call Crlf
+
+    ; Solicitar la entrada del usuario
+    mov edx, OFFSET promptText
+    call WriteString
+    call ReadUserInput            ; Leer la entrada del usuario
+
+    ; Procesar la opción del usuario
+    mov al, userInput[0]
+    cmp al, '1'
+    je UserMenu                  ; Saltar al submenú de usuario
+
+    cmp al, '2'
+    je StartGame                 ; Saltar al inicio del juego
+
+    cmp al, '3'
+    je ExitGame                  ; Salir del sistema
+
+    jmp main                     ; Si no es válida, volver a mostrar el menú
+
+    ;-------------------------------------
+    ; Submenú de Usuario
+    ;-------------------------------------
+UserMenu PROC
+    call Clrscr
+    mov edx, OFFSET subMenuTitle  ; Mostrar título del submenú
+    call WriteString
+    call Crlf
+
+    mov edx, OFFSET menuLogin     ; Opción 1: Iniciar sesión
+    call WriteString
+    call Crlf
+
+    mov edx, OFFSET menuCreate    ; Opción 2: Crear cuenta
+    call WriteString
+    call Crlf
+
+    ; Solicitar la entrada del usuario
+    mov edx, OFFSET promptText
+    call WriteString
+    call ReadUserInput
+
+    ; Procesar la opción del submenú
+    mov al, userInput[0]
+    cmp al, '1'
+    je Login
+
+    cmp al, '2'
+    je CreateAccount
+
+    jmp UserMenu                  ; Si no es válida, volver a mostrar el submenú
+UserMenu ENDP
+
+;-------------------------------------
+; Login (Iniciar sesión)
+;-------------------------------------
+Login PROC
+    call Clrscr
+    mov edx, OFFSET enterUser     ; Solicitar nombre de usuario
+    call WriteString
+    lea edx, userInput
+    call ReadString
+
+    mov edx, OFFSET enterPass     ; Solicitar contraseña
+    call WriteString
+    lea edx, userInput
+    call ReadString
+
+    ; Aquí se realizaría la lógica de validación del usuario.
+    jmp main                     ; Volver al menú principal después de iniciar sesión
+Login ENDP
+
+;-------------------------------------
+; CreateAccount (Crear cuenta)
+;-------------------------------------
+CreateAccount PROC
+    call Clrscr
+    mov edx, OFFSET enterUser     ; Solicitar nombre de usuario
+    call WriteString
+    lea edx, userInput
+    call ReadString
+
+    mov edx, OFFSET enterPass     ; Solicitar contraseña
+    call WriteString
+    lea edx, userInput
+    call ReadString
+
+    ; Aquí se guardaría el nuevo usuario y contraseña en un archivo.
+    jmp main                     ; Volver al menú principal después de crear cuenta
+CreateAccount ENDP
+
+;-------------------------------------
+; Procedimiento StartGame (Iniciar juego)
+;-------------------------------------
+StartGame PROC
+    call Clrscr
+    mov edx, OFFSET menuOption2
+    call WriteString
+    call Crlf
+    jmp main
+StartGame ENDP
+
+;-------------------------------------
+; Procedimiento ExitGame (Salir del sistema)
+;-------------------------------------
+ExitGame PROC
     call ExitProcess            ; Salir del programa
-
-main ENDP
-
-;-------------------------------------
-; CenterText
-;-------------------------------------
-; Centra el texto cargado en EDX en la consola.
-; Asume que la consola tiene 80 columnas.
-;-------------------------------------
-CenterText PROC
-    pusha                         ; Guardar los registros
-
-    mov ecx, 80                   ; Número total de columnas de la consola
-    mov ebx, edx                  ; Dirección de la cadena en EDX
-    call StrLength                ; Llama a la función de Irvine para obtener la longitud
-    mov eax, ecx
-    sub eax, ebx                  ; Resta la longitud de la cadena al total
-    shr eax, 1                    ; Divide entre 2 para centrar
-
-    call Gotoxy                   ; Mueve el cursor a la posición centrada
-    popa                          ; Restaurar los registros
-
-    ret
-CenterText ENDP
+ExitGame ENDP
 
 ;-------------------------------------
 ; ReadUserInput
@@ -133,4 +160,4 @@ ReadUserInput PROC
     ret
 ReadUserInput ENDP
 
-END main
+.END main
